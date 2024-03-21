@@ -1,18 +1,20 @@
+import { useRef } from "react";
 import { useState } from "react";
 
 export default function Adder() {
     const [result, setResult] = useState(0);
 
+    const aRef = useRef(0);
+    const bRef = useRef(0);
+
     function addNum() {
-        let a = parseInt(document.getElementById('a').value || 0);
-        let b = parseInt(document.getElementById('b').value || 0);
-        setResult(a + b)
+        setResult(Number(aRef.current.value) + Number(bRef.current.value));
     }
     return (
         <div>
-            <input type="text" id="a" />
+            <input type="number" id="a" ref={bRef} />
             <button onClick={addNum}>+</button>
-            <input type="text" id="b" />
+            <input type="number" id="b" ref={aRef} />
             =
             <input type="text" id="result" disabled value={result} />
         </div>
