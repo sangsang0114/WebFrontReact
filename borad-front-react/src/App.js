@@ -5,6 +5,10 @@ import MyBoardDetail from './component/Article';
 import MyBoardUpdate from './component/ArticleUpdate';
 import MyBoardInsert from './component/ArticleInput';
 
+import MemberRegister from "./component/MemberRegister";
+import MemberLogin from "./component/MemberLogin";
+import MemberLogout from "./component/MemberLogout";
+import MemberPage from './component/MemberPage';
 
 function App() {
   return (
@@ -15,6 +19,10 @@ function App() {
           <Route path="/:id" element={<MyBoardDetail />}></Route>
           <Route path="/insert" element={<MyBoardInsert />}></Route>
           <Route path="/update/:id" element={<MyBoardUpdate />}></Route >
+          <Route path="/register" element={<MemberRegister />}></Route >
+          <Route path="/login" element={<MemberLogin />}></Route >
+          <Route path="/logout" element={<MemberLogout />}></Route >
+          <Route path="/mypage" element={<MemberPage />}></Route >
         </Routes>
       </BrowserRouter>
     </div>
