@@ -1,7 +1,6 @@
 import GNB from "./GlobalNavigationBar";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { Form, Button, Container } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -9,33 +8,26 @@ export default function MyBoardInsert() {
     const { id } = useParams();
     const [oldArticle, setOldArticle] = useState({});
     const navigate = useNavigate();
-    const backEndDomain = "http://localhost:3030";
+    const backEndDomain = "http://localhost:8080/api/v1/article";
+    const location = useLocation();
+
     useEffect(() => {
-        const loadArticleRequestUrl = `${backEndDomain}/boards/${id}`
-        fetch(loadArticleRequestUrl)
-            .then(response => response.json())
-            .then(json => {
-                setOldArticle(json);
-            });
+        setOldArticle({ ...location.state });
     }, []);
 
     const onFormCahnge = (e) => {
-        let newArticle = oldArticle;
+        const newArticle = oldArticle;
         newArticle[e.target.name] = e.target.value;
         setOldArticle(newArticle);
     }
 
     function updateArticle(event) {
         event.preventDefault();
-        const requestUrl = `${backEndDomain}/boards/${id}`;
-        let now = new Date().toString();
-        console.log(oldArticle.title);
-        let bodyString = JSON.stringify({
+        const requestUrl = `${backEndDomain}/${id}`;
+        const bodyString = JSON.stringify({
             title: oldArticle.title,
-            text: oldArticle.text,
-            mod_dtm: now,
+            content: oldArticle.content,
         });
-        console.log(bodyString);
         fetch(requestUrl,
             {
                 method: "PATCH",
@@ -44,9 +36,9 @@ export default function MyBoardInsert() {
             }
         )
             .then((response) => response.json())
-            .then((result) => {
+            .then(() => {
                 alert('게시글 수정 완료');
-                navigate('/');
+                navigate(`/${id}`);
             });
     }
     return (
@@ -54,34 +46,26 @@ export default function MyBoardInsert() {
             <GNB />
             <Container>
                 <Form>
-                    <div className="form-group">
-                        <label>Name</label>
-                        <input
-                            type="text"
-                            className="form-control"
-                            readOnly={true}
-                            value={oldArticle.mem_id || "unknown"}
+                    <Form.Group>
+                        <Form.Label>Name</Form.Label>
+                        <Form.Control type="text" disabled
+                            value={oldArticle.memberId || "unknown"}
                         />
-                    </div>
-                    <div className="form-group">
-                        <label>Title</label>
-                        <input type="text" name="title" className="form-control"
-                            placeholder="제목을 입력하세요" defaultValue={oldArticle.title}
-                        />
-                    </div>
-                    <div className="form-group">
-                        <label>Content</label>
-                        <textarea
-                            name="text"
-                            className="form-control"
-                            placeholder="내용을 입력하세요"
-                            defaultValue={oldArticle.text || ""}
+                    </Form.Group>
+                    <Form.Group>
+                        <Form.Label>Title</Form.Label>
+                        <Form.Control type="text" placeholder="제목을 입력하세요" name="title"
                             onChange={onFormCahnge}
-                            rows={10}
+                            defaultValue={oldArticle.title}
                         />
-                    </div>
-                    <br />
-                    <br />
+                    </Form.Group>
+                    <Form.Group className='mb-4'>
+                        <Form.Label>Content</Form.Label>
+                        <Form.Control as="textarea" name="content" placeholder="내용을 입력하세요" rows={10}
+                            onChange={onFormCahnge}
+                            defaultValue={oldArticle.content || ""}
+                        />
+                    </Form.Group>
                     <Button variant="primary" onClick={updateArticle}>게시글 수정</Button>
                     <Button type="reset" variant="warning">모두 지우기</Button>
                 </Form>
