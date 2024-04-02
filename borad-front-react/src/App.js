@@ -4,6 +4,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import MyBoardDetail from './component/Article';
 import MyBoardUpdate from './component/ArticleUpdate';
 import MyBoardInsert from './component/ArticleInput';
+import MyBoardManage from './component/BoardManage';
 
 import MemberRegister from "./component/MemberRegister";
 import MemberLogin from "./component/MemberLogin";
@@ -23,6 +24,7 @@ function App() {
           <Route path="/login" element={<MemberLogin />}></Route >
           <Route path="/logout" element={<MemberLogout />}></Route >
           <Route path="/mypage" element={<MemberPage />}></Route >
+          <Route path="/manage" element={<MyBoardManage />}></Route >
         </Routes>
       </BrowserRouter>
     </div>
