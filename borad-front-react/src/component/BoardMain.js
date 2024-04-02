@@ -1,8 +1,10 @@
 import { Link, useSearchParams } from "react-router-dom";
 import GNB from "./GlobalNavigationBar";
 import { useEffect, useState } from "react";
-import { Container, Table, Button, Form, Pagination } from 'react-bootstrap';
+import { Container, Table, Button, Form, Pagination, Toast } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { useCookies } from 'react-cookie';
+
 
 export default function MyBoard() {
     const [artcileList, setArticleList] = useState([]);
@@ -14,7 +16,15 @@ export default function MyBoard() {
     const [pageNumbers, setPageNumbers] = useState([]);
     const [pagingInfo, setPagingInfo] = useState({});
 
+    const [cookies, ,] = useCookies(['id']);
+    const [userId, setUserId] = useState(null);
+
+    const [showA, setShowA] = useState(false);
+    const toggleShowA = () => setShowA(!showA);
+
     useEffect(() => {
+        setUserId(cookies.id);
+        setShowA(false);
         const backEndDomain = "http://localhost:8080/api/v1";
         const requestUrl = `${backEndDomain}/article/?size=${size}&page=${page}`;
         fetch(requestUrl)
@@ -48,7 +58,14 @@ export default function MyBoard() {
                 <h1>게시판에 오신 것을 환영합니다.</h1>
                 <PaginationOption />
                 <hr />
-                <Link to={"/insert"}><Button variant="primary">게시글 작성</Button></Link>
+                <Button variant="primary" href={userId ? 'insert' : null} onClick={userId ? null : toggleShowA}>게시글 작성</Button>
+                <Toast show={showA} onClose={toggleShowA} bg="info">
+                    <Toast.Header>
+                        <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
+                        <strong className="me-auto">Yoons</strong>
+                    </Toast.Header>
+                    <Toast.Body>게시글을 작성하려면 로그인하세요.</Toast.Body>
+                </Toast>
                 <ArticleListTable />
                 <PaginationItem />
             </Container >
@@ -95,7 +112,7 @@ export default function MyBoard() {
 
     function ArticleListTable() {
         return <>
-            <Table bordered>
+            <Table bordered className="mt-4">
                 <tbody>
                     <tr>
                         <th className="d-sm-none d-lg-block">번호</th>

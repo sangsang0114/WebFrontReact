@@ -1,6 +1,7 @@
 import GNB from "./GlobalNavigationBar";
 import { useRef, useState } from "react";
-import { Container, Alert, Button, Form } from 'react-bootstrap';
+import { Container, Alert, Button, Form, Row, Col } from 'react-bootstrap';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
@@ -12,8 +13,7 @@ export default function MemberLogin() {
     const backEndDomain = "http://localhost:8080/api/v1";
 
     const [showAlert, setShowAlert] = useState(false);
-    const [idCookie, setIdCookie] = useCookies(['id']);
-    const [nameCookie, setNameCookie] = useCookies(['name']);
+    const [, setCookies] = useCookies(['name']);
     function requestLogin(event) {
         event.preventDefault();
 
@@ -22,7 +22,6 @@ export default function MemberLogin() {
             memberId: memberIdRef.current.value,
             memberPassword: passwordRef.current.value
         });
-        console.log(bodyString);
         fetch(requestUrl,
             {
                 method: "POST",
@@ -32,11 +31,13 @@ export default function MemberLogin() {
         )
             .then(response => response.json())
             .then((json) => {
+                console.log(json);
                 if (json.code === "E4") {
                     setShowAlert(true);
                 } else {
-                    setIdCookie('id', json.memberId);
-                    setNameCookie('name', json.memberName);
+                    setCookies('id', json.memberId);
+                    setCookies('name', json.memberName);
+                    setCookies('role', json.memberRole);
                     navigate('/');
                 }
             })
@@ -58,6 +59,19 @@ export default function MemberLogin() {
                         <Form.Control type="password" placeholder="비밀번호를 입력하세요" ref={passwordRef}></Form.Control>
                     </Form.Group>
                 </Form>
+                <hr />
+                <Container>
+                    <Row>
+                        <Col xs={12} md={6}>
+                            <p>
+                                비밀번호를 잊으셨나요?{' '}
+                                <a href="/forgot-password/" style={{ textDecoration: 'none', color: '#007bff', fontWeight: 'bold' }}>
+                                    비밀번호 찾기
+                                </a>
+                            </p>
+                        </Col>
+                    </Row>
+                </Container>
                 <Button variant="primary" onClick={requestLogin}>로그인</Button>
                 <Button variant="warning">취소</Button>
                 {showAlert && <Alert variant="warning" onClose={() => setShowAlert(false)} dismissible>

@@ -12,6 +12,8 @@ export default function MemberLogout() {
 
     function requestLogout() {
         removeCookie('id', { path: '/' });
+        removeCookie('name', { path: '/' });
+        removeCookie('role', { path: '/' });
         const requestUrl = `${backEndDomain}/member/logout/`;
         fetch(requestUrl)
             .then(response => response.text())

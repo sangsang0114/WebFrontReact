@@ -1,16 +1,25 @@
 import { Container, Table, Button, Modal } from 'react-bootstrap';
 import articleStyle from "./Article.module.css"
 import { useEffect, useState, useRef } from "react"
+import { useCookies } from 'react-cookie';
 
 export default function Comment(props) {
+    const [cookies, ,] = useCookies(['id']);
     const [comments, setComments] = useState([]);
     const commentRef = useRef(null);
     const backendDomain = "http://localhost:8080/api/v1/comment"
     const articleId = props.articleId;
     const [show, setShow] = useState(false);
 
+    const [userId, setUserId] = useState(null);
+    const [userName, setUserName] = useState(null);
+    const [userRole, setUserRole] = useState(null);
+
     useEffect(() => {
         loadComments();
+        setUserId(cookies.id);
+        setUserName(cookies.name);
+        setUserRole(cookies.role);
     }, []);
 
     function loadComments() {
@@ -23,13 +32,17 @@ export default function Comment(props) {
         <>
             {comments.map(comment => (
                 <Container className={articleStyle.articleZone}>
-                    <CommentEditButton commentId={comment.id} commentContent={comment.reply} />
-                    <CommentDeleteButton commentId={comment.id} />
+                    {userName === comment.username &&
+                        <CommentEditButton commentId={comment.id} commentContent={comment.reply} />
+                    }
+                    {(userName === comment.username || userRole === 'ROLE_ADMIN') &&
+                        <CommentDeleteButton commentId={comment.id} />
+                    }
                     <Table bordered>
                         <tbody>
                             <tr className="row pd-0 mx-0">
-                                <td className="col-10">작성자 <b>{comment.username}</b></td>
-                                <td className="col-2" ><small>{comment.createdAt}</small></td>
+                                <td className="col-8">작성자 <b>{comment.username}</b></td>
+                                <td className="col-4" ><small>{comment.createdAt}</small></td>
                             </tr>
                             <tr className="row pd-0 mx-0">
                                 <td>{comment.commentContent}</td>

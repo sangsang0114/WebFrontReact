@@ -6,9 +6,10 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { useCookies } from 'react-cookie';
 
 export default function MemberPage() {
-    const [cookies, setCookie, removeCookie] = useCookies(['id']);
+    const [cookies, ,] = useCookies(['id']);
     const [userId, setUserId] = useState(null);
     const [userName, setUserName] = useState(null);
+    const [memberRole, setMemberRole] = useState(null);
     useEffect(() => {
         const backEndDomain = "http://localhost:8080/api/v1";
         const requestUrl = `${backEndDomain}/member/info/${cookies.id}`;
@@ -18,6 +19,7 @@ export default function MemberPage() {
                 console.log(json);
                 setUserId(json.id);
                 setUserName(json.username);
+                setMemberRole(json.memberRole);
             })
 
     }, []);
@@ -33,6 +35,9 @@ export default function MemberPage() {
 
                     <h3>name</h3>
                     <p>{userName}</p>
+
+                    <h3>role</h3>
+                    <p>{memberRole}</p>
                 </Form>
                 <Button variant="primary">닉네임 변경</Button>
             </Container>

@@ -47,12 +47,6 @@ export default function MyBoardInsert() {
             <Container>
                 <Form>
                     <Form.Group>
-                        <Form.Label>Name</Form.Label>
-                        <Form.Control type="text" disabled
-                            value={oldArticle.memberId || "unknown"}
-                        />
-                    </Form.Group>
-                    <Form.Group>
                         <Form.Label>Title</Form.Label>
                         <Form.Control type="text" placeholder="제목을 입력하세요" name="title"
                             onChange={onFormCahnge}

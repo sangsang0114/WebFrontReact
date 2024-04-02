@@ -11,13 +11,11 @@ export default function MyBoardInsert() {
     const contentRef = useRef(null);
     const navigate = useNavigate();
     const backEndDomain = "http://localhost:8080/api/v1/article";
-    const [cookies, setCookie, removeCookie] = useCookies(['id']);
+    const [cookies, ,] = useCookies(['id']);
     const [userId, setUserId] = useState(null);
-    const [userName, setUserName] = useState(null);
 
     useEffect(() => {
         setUserId(cookies.id);
-        setUserName(cookies.name);
     })
 
     function addArticle(event) {
@@ -49,9 +47,9 @@ export default function MyBoardInsert() {
             <Container>
                 <Form>
                     <Form.Group>
-                        <Form.Label>Name</Form.Label>
+                        <Form.Label hidden>Name</Form.Label>
                         <Form.Control type="text" placeholder="작성자명을 입력하세요."
-                            ref={nicknameRef} value={userId} disabled
+                            ref={nicknameRef} value={userId} hidden
                         />
                     </Form.Group>
                     <Form.Group>
@@ -65,10 +63,6 @@ export default function MyBoardInsert() {
                         <Form.Control as="textarea" placeholder="내용을 입력하세요." rows={10}
                             ref={contentRef}
                         />
-                    </Form.Group>
-                    <Form.Group className="mb-4">
-                        <Form.Label>password</Form.Label>
-                        <Form.Control type="password" placeholder="설정할 비밀번호를 입력하세요." />
                     </Form.Group>
                     <Button variant="primary" onClick={addArticle}>게시글 등록</Button>
                     <Button type="reset" variant="warning">모두 지우기</Button>
