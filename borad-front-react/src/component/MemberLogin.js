@@ -10,17 +10,16 @@ export default function MemberLogin() {
     const memberIdRef = useRef(null);
     const passwordRef = useRef(null);
     const navigate = useNavigate();
-    const backEndDomain = "http://localhost:8080/api/v1";
 
     const [showAlert, setShowAlert] = useState(false);
     const [, setCookies] = useCookies(['name']);
     function requestLogin(event) {
         event.preventDefault();
 
-        const requestUrl = `${backEndDomain}/member/login/`;
+        const requestUrl = `/api/member/login/`;
         const bodyString = JSON.stringify({
-            memberId: memberIdRef.current.value,
-            memberPassword: passwordRef.current.value
+            email: memberIdRef.current.value,
+            password: passwordRef.current.value
         });
         fetch(requestUrl,
             {

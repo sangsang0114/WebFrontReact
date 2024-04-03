@@ -25,10 +25,11 @@ export default function MyBoard() {
     useEffect(() => {
         setUserId(cookies.id);
         setShowA(false);
-        const backEndDomain = "http://localhost:8080/api/v1";
-        const requestUrl = `${backEndDomain}/article/?size=${size}&page=${page}`;
+        const requestUrl = `api/article/?size=${size}&page=${page}`;
         fetch(requestUrl)
-            .then(response => response.json())
+            .then(response => (
+                response.json()
+            ))
             .then(json => {
                 setArticleList(json.articles)
                 setPagingInfo({
