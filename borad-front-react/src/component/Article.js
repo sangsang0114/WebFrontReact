@@ -9,21 +9,17 @@ import { useCookies } from 'react-cookie';
 
 export default function MyBoardDetail() {
     const [cookies, ,] = useCookies(['id']);
-
     const [article, setArticle] = useState({});
+    const [memberId, setMemberId] = useState(null);
     const { id } = useParams();
     const navigate = useNavigate();
     const backendDomain = "http://localhost:8080/api/v1"
     const commentNickNameRef = useRef(null);
     const commentRef = useRef(null);
 
-    const [userId, setUserId] = useState(null);
-    const [userRole, setUserRole] = useState(null);
-
     useEffect(() => {
+        setMemberId(cookies.memberId);
         loadArticle();
-        setUserId(cookies.id);
-        setUserRole(cookies.role);
     }, []);
 
     function loadArticle() {
@@ -49,7 +45,7 @@ export default function MyBoardDetail() {
                     <tbody>
                         <tr className="row pd-0 mx-0">
                             <td className='col-2'>작성자 </td>
-                            <td className='col-10'><b>{article.memberId}</b></td>
+                            <td className='col-10'><b>{article.nickname}</b></td>
                         </tr>
                         <tr className='row pd-0 mx-0'>
                             <td className='col-2'><small>최초작성</small> </td>
@@ -73,12 +69,12 @@ export default function MyBoardDetail() {
                         </tr>
                     </tbody>
                 </Table>
-                {userId === article.memberId && (<Link to={"/update/" + article.id}
+                {memberId === article.memberId && (<Link to={"/update/" + article.id}
                     state={{ title: article.title, content: article.content, memberId: article.memberId }}>
                     <Button variant='primary'>글 수정하기</Button>
                 </Link>)}
-                {
-                    (userId === article.memberId || userRole === 'ROLE_ADMIN') && (article.isDeleted == 0) && <Button variant='danger' onClick={deleteArticle}>글 삭제하기</Button>}
+
+                <Button variant='danger' onClick={deleteArticle}>글 삭제하기</Button>
             </Container>
         )
     }
@@ -86,9 +82,12 @@ export default function MyBoardDetail() {
     function deleteArticle() {
         const deleteArticleRequestUrl = `${backendDomain}/article`;
         fetch(`${deleteArticleRequestUrl}/${id}`, {
+            headers: {
+                'Authorization': `Bearer ${cookies.accessToken}`
+            },
             method: "DELETE"
         }).then((response) => response.text())
-            .then((result) => {
+            .then(() => {
                 alert('게시글 삭제 완료');
                 navigate('/')
             })
@@ -98,19 +97,13 @@ export default function MyBoardDetail() {
         return (
             <Container>
                 <Form>
-                    <Form.Group className="col-md-6">
-                        <Form.Label hidden>Name</Form.Label>
-                        <Form.Control type="text" placeholder="닉네임을 입력하세요"
-                            ref={commentNickNameRef} value={userId} hidden
-                        />
-                    </Form.Group>
                     <Form.Group>
                         <Form.Label>Content</Form.Label>
-                        <Form.Control as="textarea" placeholder={userId ? "댓글 내용을 입력하세요" : "댓글 작성을 위해서는 로그인이 필요합니다."} rows={2}
-                            ref={commentRef} disabled={!userId}
+                        <Form.Control as="textarea" placeholder={memberId ? "댓글 내용을 입력하세요" : "댓글 작성을 위해서는 로그인이 필요합니다."} rows={2}
+                            ref={commentRef} disabled={!memberId}
                         />
                     </Form.Group>
-                    <Button variant='primary' onClick={insertComment} disabled={!userId}>댓글 등록</Button>
+                    <Button variant='primary' onClick={insertComment} disabled={!memberId}>댓글 등록</Button>
                     <hr />
                 </Form>
             </Container >
@@ -122,13 +115,15 @@ export default function MyBoardDetail() {
         const insertCommentRequestUrl = `${backendDomain}/comment/`;
         const bodyString = JSON.stringify({
             articleId: id,
-            username: commentNickNameRef.current.value,
             commentContent: commentRef.current.value,
         });
 
         fetch(insertCommentRequestUrl, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Authorization": "Bearer " + cookies.accessToken,
+                "Content-Type": "application/json"
+            },
             body: bodyString
         })
             .then((response) => response.json())

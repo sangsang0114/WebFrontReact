@@ -22,8 +22,8 @@ export default function MyBoard() {
     const [passwordConfirmAlertContent, setPasswordConfirmAlertContent] = useState("");
     const [passwordConfirmAlertVariant, setPasswordConfirmAlertVariant] = useState("");
 
-    const memberIdRef = useRef(null);
-    const membernameRef = useRef(null);
+    const emailRef = useRef(null);
+    const nicknameRef = useRef(null);
     const passwordRef = useRef(null);
     const passwordConfirmRef = useRef(null);
     const backEndDomain = "http://localhost:8080/api/v1";
@@ -34,10 +34,10 @@ export default function MyBoard() {
 
         const requestUrl = `${backEndDomain}/member/`;
         const bodyString = JSON.stringify({
-            memberId: memberIdRef.current.value,
-            memberName: membernameRef.current.value,
+            email: emailRef.current.value,
+            nickname: nicknameRef.current.value,
+            password: passwordRef.current.value,
             memberRole: "ROLE_USER",
-            memberPassword: passwordRef.current.value
         });
         console.log(bodyString);
         fetch(requestUrl,
@@ -92,14 +92,14 @@ export default function MyBoard() {
 
     function checkDuplicate(event) {
         event.preventDefault();
-        const memberId = memberIdRef.current.value;
+        const email = emailRef.current.value;
 
-        const requestUrl = `${backEndDomain}/member/${memberId}`;
+        const requestUrl = `${backEndDomain}/member/check/${email}`;
         fetch(requestUrl)
             .then(response => response.json())
             .then(isDuplicate => {
                 setShowAlert(true);
-                if (isDuplicate === true) {
+                if (isDuplicate == true) {
                     setAlertContent("이미 존재하는 ID입니다")
                     setAlertVariant("warning");
                     setIsAvailableId(false);
@@ -119,15 +119,15 @@ export default function MyBoard() {
                 <Form>
                     <Form.Group>
                         <Form.Label>ID</Form.Label>
-                        <Form.Control type="text" placeholder="ID를 입력하세요" onChange={onIdFormChange}
-                            ref={memberIdRef}>
+                        <Form.Control type="text" placeholder="이메일을 입력하세요" onChange={onIdFormChange}
+                            ref={emailRef}>
                         </Form.Control>
                         {showAlert && <Alert variant={alertVariant}>{alertContent}</Alert>}
-                        <Button onClick={checkDuplicate}>ID 중복확인</Button>
+                        <Button onClick={checkDuplicate}>이메일 중복확인</Button>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label>nickname</Form.Label>
-                        <Form.Control type="text" placeholder="닉네임을 입력하세요" ref={membernameRef}></Form.Control>
+                        <Form.Control type="text" placeholder="닉네임을 입력하세요" ref={nicknameRef}></Form.Control>
                     </Form.Group>
                     <Form.Group>
                         <Form.Label>password</Form.Label>

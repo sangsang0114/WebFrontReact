@@ -1,37 +1,33 @@
 import GNB from "./GlobalNavigationBar";
-import { useRef, useState, useEffect } from "react";
+import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Form, Button, Container } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useCookies } from 'react-cookie';
 
 export default function MyBoardInsert() {
-    const nicknameRef = useRef(null);
     const titleRef = useRef(null);
     const contentRef = useRef(null);
     const navigate = useNavigate();
     const backEndDomain = "http://localhost:8080/api/v1/article";
-    const [cookies, ,] = useCookies(['id']);
-    const [userId, setUserId] = useState(null);
-
-    useEffect(() => {
-        setUserId(cookies.id);
-    })
+    const [cookies, ,] = useCookies();
 
     function addArticle(event) {
         event.preventDefault();
 
         const bodyString = JSON.stringify({
-            mem_id: nicknameRef.current.value,
             title: titleRef.current.value,
-            text: contentRef.current.value,
+            content: contentRef.current.value,
         });
 
         const requestUrl = `${backEndDomain}/`;
         fetch(requestUrl,
             {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${cookies.accessToken}`
+                },
                 body: bodyString
             }
         )
@@ -46,12 +42,6 @@ export default function MyBoardInsert() {
             <GNB />
             <Container>
                 <Form>
-                    <Form.Group>
-                        <Form.Label hidden>Name</Form.Label>
-                        <Form.Control type="text" placeholder="작성자명을 입력하세요."
-                            ref={nicknameRef} value={userId} hidden
-                        />
-                    </Form.Group>
                     <Form.Group>
                         <Form.Label>Title</Form.Label>
                         <Form.Control type="text" placeholder="제목을 입력하세요."

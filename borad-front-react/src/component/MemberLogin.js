@@ -7,18 +7,18 @@ import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 
 export default function MemberLogin() {
-    const memberIdRef = useRef(null);
+    const emailRef = useRef(null);
     const passwordRef = useRef(null);
     const navigate = useNavigate();
 
     const [showAlert, setShowAlert] = useState(false);
-    const [, setCookies] = useCookies(['name']);
+    const [, setCookies] = useCookies();
     function requestLogin(event) {
         event.preventDefault();
 
         const requestUrl = `/api/member/login/`;
         const bodyString = JSON.stringify({
-            email: memberIdRef.current.value,
+            email: emailRef.current.value,
             password: passwordRef.current.value
         });
         fetch(requestUrl,
@@ -34,9 +34,9 @@ export default function MemberLogin() {
                 if (json.code === "E4") {
                     setShowAlert(true);
                 } else {
-                    setCookies('id', json.memberId);
-                    setCookies('name', json.memberName);
-                    setCookies('role', json.memberRole);
+                    setCookies('accessToken', json.accessToken);
+                    setCookies('refreshToken', json.refreshToken);
+                    setCookies('memberId', json.memberId);
                     navigate('/');
                 }
             })
@@ -50,7 +50,7 @@ export default function MemberLogin() {
                     <Form.Group>
                         <Form.Label>ID</Form.Label>
                         <Form.Control type="text" placeholder="ID를 입력하세요"
-                            ref={memberIdRef}>
+                            ref={emailRef}>
                         </Form.Control>
                     </Form.Group>
                     <Form.Group>

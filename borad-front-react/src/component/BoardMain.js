@@ -17,16 +17,20 @@ export default function MyBoard() {
     const [pagingInfo, setPagingInfo] = useState({});
 
     const [cookies, ,] = useCookies(['id']);
-    const [userId, setUserId] = useState(null);
+    const [memberId, setMemberId] = useState(null);
 
     const [showA, setShowA] = useState(false);
     const toggleShowA = () => setShowA(!showA);
 
     useEffect(() => {
-        setUserId(cookies.id);
         setShowA(false);
+        setMemberId(cookies.memberId);
         const requestUrl = `api/article/?size=${size}&page=${page}`;
-        fetch(requestUrl)
+        fetch(requestUrl, {
+            headers: {
+                'Authorization': `Bearer ${cookies.accessToken}`
+            }
+        })
             .then(response => (
                 response.json()
             ))
@@ -59,7 +63,7 @@ export default function MyBoard() {
                 <h1>게시판에 오신 것을 환영합니다.</h1>
                 <PaginationOption />
                 <hr />
-                <Button variant="primary" href={userId ? 'insert' : null} onClick={userId ? null : toggleShowA}>게시글 작성</Button>
+                <Button variant="primary" href={memberId ? 'insert' : null} onClick={memberId ? null : toggleShowA}>게시글 작성</Button>
                 <Toast show={showA} onClose={toggleShowA} bg="info">
                     <Toast.Header>
                         <img src="holder.js/20x20?text=%20" className="rounded me-2" alt="" />
@@ -126,7 +130,7 @@ export default function MyBoard() {
                         <tr>
                             <td className="d-sm-none d-lg-block">{article.id}</td>
                             <td><Link to={"/" + article.id}>{article.title}</Link></td>
-                            <td>{article.memberId}</td>
+                            <td>{article.nickname}</td>
                             <td>{article.viewCount}</td>
                             <td className="d-sm-none d-lg-block">{article.createdAt}</td>
                         </tr>
