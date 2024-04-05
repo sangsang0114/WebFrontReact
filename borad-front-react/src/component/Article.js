@@ -74,7 +74,7 @@ export default function MyBoardDetail() {
                     <Button variant='primary'>글 수정하기</Button>
                 </Link>)}
 
-                <Button variant='danger' onClick={deleteArticle}>글 삭제하기</Button>
+                {memberId === article.memberId && <Button variant='danger' onClick={deleteArticle}>글 삭제하기</Button>}
             </Container>
         )
     }
